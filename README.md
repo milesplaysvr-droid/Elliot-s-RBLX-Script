@@ -1,1 +1,1 @@
-# Elliot-s-RBLX-Script
+DISCLAIMER : ChatGPT Edited This.           THIS ISNT FOR UNFAIR EXCUTE SCRIPTS
