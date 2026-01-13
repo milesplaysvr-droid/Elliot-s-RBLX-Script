@@ -1,0 +1,321 @@
+--Credits : ChatGPT
+--MMod ON TOP
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+-- Key verification
+local correctKey = "Rockyonion123?"
+
+-- Theme Colors
+local COLOR_BLACK = Color3.fromRGB(0, 0, 0)
+local COLOR_YELLOW = Color3.fromRGB(255, 255, 0)
+local COLOR_DARK_RED = Color3.fromRGB(150, 0, 0)
+local COLOR_BRIGHT_RED = Color3.fromRGB(228, 0, 0)
+local COLOR_DARK_GREY = Color3.fromRGB(25, 25, 25)
+local COLOR_GREEN = Color3.fromRGB(0, 150, 0)
+
+-- ===========================
+-- 1. LOADING SCREEN
+-- ===========================
+local loadingGui = Instance.new("ScreenGui")
+loadingGui.Name = "LoadingScreen"
+loadingGui.Parent = CoreGui
+
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0, 400, 0, 200)
+loadingFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
+loadingFrame.BackgroundColor3 = COLOR_BLACK
+loadingFrame.BorderSizePixel = 0
+loadingFrame.Parent = loadingGui
+
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(0, 20)
+loadingCorner.Parent = loadingFrame
+
+-- Progress bar background
+local progressBG = Instance.new("Frame")
+progressBG.Size = UDim2.new(1, 0, 0, 30)
+progressBG.Position = UDim2.new(0, 0, 0.4, 0)
+progressBG.BackgroundColor3 = Color3.fromRGB(50,50,50)
+progressBG.Parent = loadingFrame
+
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0,15)
+bgCorner.Parent = progressBG
+
+-- Progress bar fill
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0,0,1,0)
+progressBar.BackgroundColor3 = COLOR_YELLOW
+progressBar.Parent = progressBG
+
+local fillCorner = Instance.new("UICorner")
+fillCorner.CornerRadius = UDim.new(0,15)
+fillCorner.Parent = progressBar
+
+-- Copy YouTube button
+local copyButton = Instance.new("TextButton")
+copyButton.Size = UDim2.new(0.6, 0, 0, 50)
+copyButton.Position = UDim2.new(0.2, 0, 0.7, 0)
+copyButton.Text = "Copy YouTube Link"
+copyButton.BackgroundColor3 = COLOR_GREEN
+copyButton.TextColor3 = Color3.new(1,1,1)
+copyButton.Font = Enum.Font.SourceSansBold
+copyButton.TextScaled = true
+copyButton.TextWrapped = true
+copyButton.Parent = loadingFrame
+
+-- Squircle + optional outline
+local copyCorner = Instance.new("UICorner")
+copyCorner.CornerRadius = UDim.new(0,15)
+copyCorner.Parent = copyButton
+
+local copyStroke = Instance.new("UIStroke")
+copyStroke.Color = COLOR_BLACK
+copyStroke.Thickness = 2
+copyStroke.Parent = copyButton
+
+-- Copy functionality
+copyButton.MouseButton1Click:Connect(function()
+    setclipboard("https://www.youtube.com/@Elliot-b2q")
+    copyButton.Text = "Copied!"
+end)
+
+-- Slow loading animation
+for i=0,1,0.002 do
+    progressBar.Size = UDim2.new(i,0,1,0)
+    wait(0.03)
+end
+
+loadingGui:Destroy()
+
+-- ===========================
+-- 2. KEY SYSTEM GUI
+-- ===========================
+local keyGui = Instance.new("ScreenGui")
+keyGui.Name = "KeyGui"
+keyGui.Parent = CoreGui
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 300, 0, 150)
+keyFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+keyFrame.BackgroundColor3 = COLOR_BLACK
+keyFrame.BorderColor3 = COLOR_YELLOW
+keyFrame.BorderSizePixel = 2
+keyFrame.Active = true
+keyFrame.Draggable = true
+keyFrame.Parent = keyGui
+
+local keyCorner = Instance.new("UICorner")
+keyCorner.CornerRadius = UDim.new(0,20)
+keyCorner.Parent = keyFrame
+
+local keyInput = Instance.new("TextBox")
+keyInput.Size = UDim2.new(0.8, 0, 0, 30)
+keyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
+keyInput.BackgroundColor3 = COLOR_DARK_GREY
+keyInput.TextColor3 = Color3.new(1,1,1)
+keyInput.PlaceholderText = "Enter Key..."
+keyInput.ClearTextOnFocus = false
+keyInput.Parent = keyFrame
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0,12)
+inputCorner.Parent = keyInput
+
+local keySubmit = Instance.new("TextButton")
+keySubmit.Size = UDim2.new(0.8, 0, 0, 30)
+keySubmit.Position = UDim2.new(0.1, 0, 0.6, 0)
+keySubmit.BackgroundColor3 = COLOR_BLACK
+keySubmit.BorderColor3 = COLOR_YELLOW
+keySubmit.Text = "LOGIN"
+keySubmit.TextColor3 = COLOR_YELLOW
+keySubmit.Parent = keyFrame
+
+local submitCorner = Instance.new("UICorner")
+submitCorner.CornerRadius = UDim.new(0,12)
+submitCorner.Parent = keySubmit
+
+local keyMessage = Instance.new("TextLabel")
+keyMessage.Size = UDim2.new(1,0,0,20)
+keyMessage.Position = UDim2.new(0,0,0.85,0)
+keyMessage.BackgroundTransparency = 1
+keyMessage.Text = ""
+keyMessage.TextColor3 = COLOR_YELLOW
+keyMessage.Parent = keyFrame
+
+-- ===========================
+-- 3. MAIN EXECUTOR GUI
+-- ===========================
+local mainGui = Instance.new("ScreenGui")
+mainGui.Name = "MModExecutor"
+mainGui.Parent = CoreGui
+mainGui.Enabled = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+mainFrame.BackgroundColor3 = COLOR_BLACK
+mainFrame.BorderColor3 = COLOR_DARK_RED
+mainFrame.BorderSizePixel = 2
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = mainGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0,20)
+mainCorner.Parent = mainFrame
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1,0,0,30)
+titleBar.BackgroundColor3 = COLOR_DARK_RED
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0,15)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1,-70,1,0)
+titleLabel.Position = UDim2.new(0,10,0,0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "MMod Executor - Dark Edition"
+titleLabel.TextColor3 = Color3.new(1,1,1)
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = titleBar
+
+-- Buttons
+local function createButton(parent,text,pos)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0,30,0,30)
+    btn.Position = pos
+    btn.BackgroundColor3 = COLOR_DARK_RED
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.Parent = parent
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,10)
+    corner.Parent = btn
+    return btn
+end
+
+local closeBtn = createButton(titleBar,"X",UDim2.new(1,-30,0,0))
+local miniBtn = createButton(titleBar,"-",UDim2.new(1,-60,0,0))
+
+local restoreBtn = Instance.new("TextButton")
+restoreBtn.Size = UDim2.new(0,100,0,30)
+restoreBtn.Position = UDim2.new(0,10,1,-40)
+restoreBtn.BackgroundColor3 = COLOR_DARK_RED
+restoreBtn.Text = "RESTORE"
+restoreBtn.TextColor3 = Color3.new(1,1,1)
+restoreBtn.Visible = false
+restoreBtn.Parent = mainGui
+
+local restoreCorner = Instance.new("UICorner")
+restoreCorner.CornerRadius = UDim.new(0,15)
+restoreCorner.Parent = restoreBtn
+
+-- Script editor
+local editor = Instance.new("TextBox")
+editor.Size = UDim2.new(0.9,0,0,150)
+editor.Position = UDim2.new(0.05,0,0.2,0)
+editor.BackgroundColor3 = COLOR_DARK_GREY
+editor.TextColor3 = Color3.new(1,1,1)
+editor.PlaceholderText = "-- Paste script here..."
+editor.MultiLine = true
+editor.ClearTextOnFocus = false
+editor.Text = ""
+editor.Parent = mainFrame
+
+local editorCorner = Instance.new("UICorner")
+editorCorner.CornerRadius = UDim.new(0,15)
+editorCorner.Parent = editor
+
+-- Execute button
+local executeBtn = Instance.new("TextButton")
+executeBtn.Size = UDim2.new(0.4,0,0,30)
+executeBtn.Position = UDim2.new(0.05,0,0.85,0)
+executeBtn.BackgroundColor3 = COLOR_DARK_RED
+executeBtn.Text = "EXECUTE"
+executeBtn.TextColor3 = Color3.new(1,1,1)
+executeBtn.Parent = mainFrame
+
+local execCorner = Instance.new("UICorner")
+execCorner.CornerRadius = UDim.new(0,12)
+execCorner.Parent = executeBtn
+
+-- Clear button
+local clearBtn = Instance.new("TextButton")
+clearBtn.Size = UDim2.new(0.4,0,0,30)
+clearBtn.Position = UDim2.new(0.55,0,0.85,0)
+clearBtn.BackgroundColor3 = COLOR_DARK_RED
+clearBtn.Text = "CLEAR"
+clearBtn.TextColor3 = Color3.new(1,1,1)
+clearBtn.Parent = mainFrame
+
+local clearCorner = Instance.new("UICorner")
+clearCorner.CornerRadius = UDim.new(0,12)
+clearCorner.Parent = clearBtn
+
+-- Output label
+local outputLabel = Instance.new("TextLabel")
+outputLabel.Size = UDim2.new(0.9,0,0,30)
+outputLabel.Position = UDim2.new(0.05,0,0.7,0)
+outputLabel.BackgroundTransparency = 1
+outputLabel.TextColor3 = COLOR_YELLOW
+outputLabel.Text = ""
+outputLabel.TextWrapped = true
+outputLabel.Parent = mainFrame
+
+-- ===========================
+-- BUTTON LOGIC
+-- ===========================
+keySubmit.MouseButton1Click:Connect(function()
+    if keyInput.Text == correctKey then
+        keyMessage.Text = "Success!"
+        keyMessage.TextColor3 = Color3.new(0,1,0)
+        task.wait(0.5)
+        keyGui:Destroy()
+        mainGui.Enabled = true
+    else
+        keyMessage.Text = "Wrong Key!"
+        keyMessage.TextColor3 = Color3.new(1,0,0)
+    end
+end)
+
+executeBtn.MouseButton1Click:Connect(function()
+    local code = editor.Text
+    local success, err = pcall(function()
+        loadstring(code)()
+    end)
+    if success then
+        outputLabel.Text = "Script executed successfully!"
+        outputLabel.TextColor3 = Color3.new(0,1,0)
+    else
+        outputLabel.Text = "Error: "..err
+        outputLabel.TextColor3 = Color3.new(1,0,0)
+    end
+end)
+
+clearBtn.MouseButton1Click:Connect(function()
+    editor.Text = ""
+    outputLabel.Text = ""
+end)
+
+miniBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    restoreBtn.Visible = true
+end)
+
+restoreBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    restoreBtn.Visible = false
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    mainGui:Destroy()
+end)
