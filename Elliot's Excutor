@@ -1,5 +1,8 @@
---Credits : ChatGPT
---MMod ON TOP
+-- ===========================
+-- MMod Executor Reborn: Squircle Edition
+-- Full Upgraded Version with Copy Key Link
+-- ===========================
+
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -66,7 +69,6 @@ copyButton.TextScaled = true
 copyButton.TextWrapped = true
 copyButton.Parent = loadingFrame
 
--- Squircle + optional outline
 local copyCorner = Instance.new("UICorner")
 copyCorner.CornerRadius = UDim.new(0,15)
 copyCorner.Parent = copyButton
@@ -76,7 +78,6 @@ copyStroke.Color = COLOR_BLACK
 copyStroke.Thickness = 2
 copyStroke.Parent = copyButton
 
--- Copy functionality
 copyButton.MouseButton1Click:Connect(function()
     setclipboard("https://www.youtube.com/@Elliot-b2q")
     copyButton.Text = "Copied!"
@@ -98,8 +99,8 @@ keyGui.Name = "KeyGui"
 keyGui.Parent = CoreGui
 
 local keyFrame = Instance.new("Frame")
-keyFrame.Size = UDim2.new(0, 300, 0, 150)
-keyFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+keyFrame.Size = UDim2.new(0, 300, 0, 180)
+keyFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
 keyFrame.BackgroundColor3 = COLOR_BLACK
 keyFrame.BorderColor3 = COLOR_YELLOW
 keyFrame.BorderSizePixel = 2
@@ -113,7 +114,7 @@ keyCorner.Parent = keyFrame
 
 local keyInput = Instance.new("TextBox")
 keyInput.Size = UDim2.new(0.8, 0, 0, 30)
-keyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
+keyInput.Position = UDim2.new(0.1, 0, 0.2, 0)
 keyInput.BackgroundColor3 = COLOR_DARK_GREY
 keyInput.TextColor3 = Color3.new(1,1,1)
 keyInput.PlaceholderText = "Enter Key..."
@@ -126,7 +127,7 @@ inputCorner.Parent = keyInput
 
 local keySubmit = Instance.new("TextButton")
 keySubmit.Size = UDim2.new(0.8, 0, 0, 30)
-keySubmit.Position = UDim2.new(0.1, 0, 0.6, 0)
+keySubmit.Position = UDim2.new(0.1, 0, 0.45, 0)
 keySubmit.BackgroundColor3 = COLOR_BLACK
 keySubmit.BorderColor3 = COLOR_YELLOW
 keySubmit.Text = "LOGIN"
@@ -137,9 +138,34 @@ local submitCorner = Instance.new("UICorner")
 submitCorner.CornerRadius = UDim.new(0,12)
 submitCorner.Parent = keySubmit
 
+-- Copy Key Link button
+local copyKeyBtn = Instance.new("TextButton")
+copyKeyBtn.Size = UDim2.new(0.8,0,0,30)
+copyKeyBtn.Position = UDim2.new(0.1,0,0.7,0)
+copyKeyBtn.BackgroundColor3 = COLOR_GREEN
+copyKeyBtn.TextColor3 = Color3.new(1,1,1)
+copyKeyBtn.Text = "Copy Key Link"
+copyKeyBtn.Font = Enum.Font.SourceSansBold
+copyKeyBtn.TextScaled = true
+copyKeyBtn.Parent = keyFrame
+
+local copyKeyCorner = Instance.new("UICorner")
+copyKeyCorner.CornerRadius = UDim.new(0,15)
+copyKeyCorner.Parent = copyKeyBtn
+
+local copyKeyStroke = Instance.new("UIStroke")
+copyKeyStroke.Color = COLOR_BLACK
+copyKeyStroke.Thickness = 2
+copyKeyStroke.Parent = copyKeyBtn
+
+copyKeyBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://pastebin.com/raw/FuZgr5V8")
+    copyKeyBtn.Text = "Copied!"
+end)
+
 local keyMessage = Instance.new("TextLabel")
 keyMessage.Size = UDim2.new(1,0,0,20)
-keyMessage.Position = UDim2.new(0,0,0.85,0)
+keyMessage.Position = UDim2.new(0,0,0.9,0)
 keyMessage.BackgroundTransparency = 1
 keyMessage.Text = ""
 keyMessage.TextColor3 = COLOR_YELLOW
