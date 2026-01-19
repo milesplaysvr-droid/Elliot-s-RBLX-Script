@@ -1,155 +1,214 @@
--- ===========================
--- MMod Executor FULL VERSION (No Place Lock, with X)
--- ===========================
+-- loadstring version : 
 
 -- Services
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Player = Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- ===========================
+-- CONFIG
+-- ===========================
+local CORRECT_KEY = "Rockyonion123?"
+
 -- Colors
--- ===========================
-local COLOR_BLACK = Color3.fromRGB(0,0,0)
-local COLOR_RED = Color3.fromRGB(150,0,0)
-local COLOR_GREEN = Color3.fromRGB(0,150,0)
-local COLOR_YELLOW = Color3.fromRGB(255,255,0)
-local COLOR_GREY = Color3.fromRGB(30,30,30)
+local BLACK = Color3.fromRGB(0,0,0)
+local RED = Color3.fromRGB(150,0,0)
+local YELLOW = Color3.fromRGB(255,255,0)
+local GREEN = Color3.fromRGB(0,150,0)
+local GREY = Color3.fromRGB(35,35,35)
 
 -- ===========================
--- Fetch Key
+-- KEY SYSTEM GUI
 -- ===========================
-local keyURL = "https://pastebin.com/raw/3XfYfBYB"
-local correctKey = "fallback"
-
-pcall(function()
-    local data = game:HttpGet(keyURL)
-    correctKey = data:match("Key%s*:%s*(.+)") or correctKey
-end)
-
--- ===========================
--- KEY GUI
--- ===========================
-local keyGui = Instance.new("ScreenGui", CoreGui)
-keyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local keyGui = Instance.new("ScreenGui")
+keyGui.Name = "KeySystem"
+keyGui.Parent = PlayerGui
 
 local keyFrame = Instance.new("Frame", keyGui)
 keyFrame.Size = UDim2.new(0,300,0,180)
 keyFrame.Position = UDim2.new(0.5,-150,0.5,-90)
-keyFrame.BackgroundColor3 = COLOR_BLACK
+keyFrame.BackgroundColor3 = BLACK
 keyFrame.Active = true
 keyFrame.Draggable = true
-Instance.new("UICorner", keyFrame).CornerRadius = UDim.new(0,16)
+Instance.new("UICorner", keyFrame)
+
+local keyTitle = Instance.new("TextLabel", keyFrame)
+keyTitle.Size = UDim2.new(1,0,0,30)
+keyTitle.Text = "Enter Key"
+keyTitle.BackgroundColor3 = RED
+keyTitle.TextColor3 = Color3.new(1,1,1)
+keyTitle.TextScaled = true
 
 local keyBox = Instance.new("TextBox", keyFrame)
-keyBox.Size = UDim2.new(0.8,0,0,30)
-keyBox.Position = UDim2.new(0.1,0,0.25,0)
-keyBox.BackgroundColor3 = COLOR_GREY
+keyBox.Size = UDim2.new(0.85,0,0,30)
+keyBox.Position = UDim2.new(0.075,0,0.35,0)
+keyBox.BackgroundColor3 = GREY
 keyBox.TextColor3 = Color3.new(1,1,1)
-keyBox.PlaceholderText = "Enter Key"
+keyBox.PlaceholderText = "Key here"
 Instance.new("UICorner", keyBox)
 
-local loginBtn = Instance.new("TextButton", keyFrame)
-loginBtn.Size = UDim2.new(0.8,0,0,35)
-loginBtn.Position = UDim2.new(0.1,0,0.5,0)
-loginBtn.BackgroundColor3 = COLOR_GREEN
-loginBtn.Text = "LOGIN"
-loginBtn.TextColor3 = Color3.new(1,1,1)
-loginBtn.TextScaled = true
-Instance.new("UICorner", loginBtn)
+local keyBtn = Instance.new("TextButton", keyFrame)
+keyBtn.Size = UDim2.new(0.85,0,0,35)
+keyBtn.Position = UDim2.new(0.075,0,0.6,0)
+keyBtn.Text = "LOGIN"
+keyBtn.BackgroundColor3 = GREEN
+keyBtn.TextColor3 = Color3.new(1,1,1)
+keyBtn.TextScaled = true
+Instance.new("UICorner", keyBtn)
 
 local keyMsg = Instance.new("TextLabel", keyFrame)
 keyMsg.Size = UDim2.new(1,0,0,25)
-keyMsg.Position = UDim2.new(0,0,0.8,0)
+keyMsg.Position = UDim2.new(0,0,0.85,0)
 keyMsg.BackgroundTransparency = 1
+keyMsg.TextColor3 = YELLOW
 keyMsg.TextScaled = true
-keyMsg.TextColor3 = COLOR_YELLOW
 
 -- ===========================
 -- MAIN GUI
 -- ===========================
-local mainGui = Instance.new("ScreenGui", CoreGui)
-mainGui.Enabled = false
-mainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local gui = Instance.new("ScreenGui")
+gui.Name = "MModExecutor"
+gui.Parent = PlayerGui
+gui.Enabled = false
 
-local mainFrame = Instance.new("Frame", mainGui)
-mainFrame.Size = UDim2.new(0,500,0,380)
-mainFrame.Position = UDim2.new(0.5,-250,0.5,-190)
-mainFrame.BackgroundColor3 = COLOR_BLACK
-mainFrame.Active = true
-mainFrame.Draggable = true
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0,18)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,520,0,400)
+frame.Position = UDim2.new(0.5,-260,0.5,-200)
+frame.BackgroundColor3 = BLACK
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,18)
 
--- Title
-local title = Instance.new("TextLabel", mainFrame)
-title.Size = UDim2.new(1,0,0,30)
-title.BackgroundColor3 = COLOR_RED
+-- Title Bar
+local titleBar = Instance.new("Frame", frame)
+titleBar.Size = UDim2.new(1,0,0,30)
+titleBar.BackgroundColor3 = RED
+
+-- Title Label
+local title = Instance.new("TextLabel", titleBar)
+title.Size = UDim2.new(1,-120,1,0)
+title.Position = UDim2.new(0,10,0,0)
+title.BackgroundTransparency = 1
 title.Text = "MMod Executor"
 title.TextColor3 = Color3.new(1,1,1)
-title.TextScaled = true
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Font = Enum.Font.SourceSansBold
 
--- Close Button
-local closeBtn = Instance.new("TextButton", mainFrame)
+-- FPS Label
+local fpsLabel = Instance.new("TextLabel", titleBar)
+fpsLabel.Size = UDim2.new(0,120,1,0)
+fpsLabel.Position = UDim2.new(0.5,-60,0,0)
+fpsLabel.BackgroundTransparency = 1
+fpsLabel.TextColor3 = YELLOW
+fpsLabel.TextScaled = true
+
+-- Credits Label
+local credits = Instance.new("TextLabel", frame)
+credits.Size = UDim2.new(1,0,0,20)
+credits.Position = UDim2.new(0,0,0,35)
+credits.BackgroundTransparency = 1
+credits.Text = "Made By @ChatGPT & @MilesModsVR"
+credits.TextColor3 = YELLOW
+credits.TextScaled = true
+credits.Font = Enum.Font.SourceSansBold
+credits.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Close & Minimize Buttons
+local closeBtn = Instance.new("TextButton", titleBar)
 closeBtn.Size = UDim2.new(0,30,0,30)
-closeBtn.Position = UDim2.new(1,-35,0,2)
-closeBtn.BackgroundColor3 = COLOR_RED
+closeBtn.Position = UDim2.new(1,-30,0,0)
 closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = RED
 closeBtn.TextColor3 = Color3.new(1,1,1)
-closeBtn.Font = Enum.Font.SourceSansBold
-closeBtn.TextScaled = true
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,6)
-closeBtn.MouseButton1Click:Connect(function()
-    mainGui:Destroy()
-end)
 
+local minBtn = Instance.new("TextButton", titleBar)
+minBtn.Size = UDim2.new(0,30,0,30)
+minBtn.Position = UDim2.new(1,-60,0,0)
+minBtn.Text = "-"
+minBtn.BackgroundColor3 = RED
+minBtn.TextColor3 = Color3.new(1,1,1)
+
+-- Restore Button
+local restoreBtn = Instance.new("TextButton", gui)
+restoreBtn.Size = UDim2.new(0,120,0,35)
+restoreBtn.Position = UDim2.new(0.5,-60,0,40)
+restoreBtn.Text = "RESTORE"
+restoreBtn.BackgroundColor3 = RED
+restoreBtn.TextColor3 = Color3.new(1,1,1)
+restoreBtn.Visible = false
+restoreBtn.Active = true
+restoreBtn.Draggable = true
+
+-- ===========================
 -- Tabs
-local tabFrame = Instance.new("Frame", mainFrame)
+-- ===========================
+local tabFrame = Instance.new("Frame", frame)
 tabFrame.Size = UDim2.new(1,0,0,30)
-tabFrame.Position = UDim2.new(0,0,0,30)
+tabFrame.Position = UDim2.new(0,0,0,60)
 tabFrame.BackgroundTransparency = 1
 
 local execTab = Instance.new("TextButton", tabFrame)
 execTab.Size = UDim2.new(0.5,0,1,0)
 execTab.Text = "Executor"
-execTab.BackgroundColor3 = COLOR_RED
+execTab.BackgroundColor3 = RED
 execTab.TextColor3 = Color3.new(1,1,1)
 
 local visTab = Instance.new("TextButton", tabFrame)
 visTab.Size = UDim2.new(0.5,0,1,0)
 visTab.Position = UDim2.new(0.5,0,0,0)
 visTab.Text = "Visuals"
-visTab.BackgroundColor3 = COLOR_BLACK
-visTab.TextColor3 = COLOR_YELLOW
+visTab.BackgroundColor3 = BLACK
+visTab.TextColor3 = YELLOW
 
 -- Pages
-local execPage = Instance.new("Frame", mainFrame)
-execPage.Size = UDim2.new(1,0,1,-60)
-execPage.Position = UDim2.new(0,0,0,60)
+local execPage = Instance.new("Frame", frame)
+execPage.Size = UDim2.new(1,0,1,-90)
+execPage.Position = UDim2.new(0,0,0,90)
 
-local visPage = Instance.new("Frame", mainFrame)
-visPage.Size = UDim2.new(1,0,1,-60)
-visPage.Position = UDim2.new(0,0,0,60)
+local visPage = Instance.new("Frame", frame)
+visPage.Size = UDim2.new(1,0,1,-90)
+visPage.Position = UDim2.new(0,0,0,90)
 visPage.Visible = false
 
--- Executor box
+-- TAB SWITCHING LOGIC
+execTab.MouseButton1Click:Connect(function()
+    execPage.Visible = true
+    visPage.Visible = false
+    execTab.BackgroundColor3 = RED
+    visTab.BackgroundColor3 = BLACK
+    execTab.TextColor3 = Color3.new(1,1,1)
+    visTab.TextColor3 = YELLOW
+end)
+
+visTab.MouseButton1Click:Connect(function()
+    execPage.Visible = false
+    visPage.Visible = true
+    visTab.BackgroundColor3 = RED
+    execTab.BackgroundColor3 = BLACK
+    visTab.TextColor3 = Color3.new(1,1,1)
+    execTab.TextColor3 = YELLOW
+end)
+
+-- ===========================
+-- Executor
+-- ===========================
 local editor = Instance.new("TextBox", execPage)
 editor.Size = UDim2.new(0.9,0,0.6,0)
 editor.Position = UDim2.new(0.05,0,0.1,0)
-editor.BackgroundColor3 = COLOR_GREY
+editor.BackgroundColor3 = GREY
 editor.TextColor3 = Color3.new(1,1,1)
 editor.MultiLine = true
 editor.PlaceholderText = "-- script here"
 
--- Run Button
 local runBtn = Instance.new("TextButton", execPage)
 runBtn.Size = UDim2.new(0.4,0,0,30)
 runBtn.Position = UDim2.new(0.05,0,0.75,0)
 runBtn.Text = "EXECUTE"
-runBtn.BackgroundColor3 = COLOR_RED
+runBtn.BackgroundColor3 = RED
 runBtn.TextColor3 = Color3.new(1,1,1)
 runBtn.MouseButton1Click:Connect(function()
     pcall(function()
@@ -157,131 +216,128 @@ runBtn.MouseButton1Click:Connect(function()
     end)
 end)
 
--- Clear Button
 local clearBtn = Instance.new("TextButton", execPage)
 clearBtn.Size = UDim2.new(0.4,0,0,30)
 clearBtn.Position = UDim2.new(0.55,0,0.75,0)
 clearBtn.Text = "CLEAR"
-clearBtn.BackgroundColor3 = COLOR_RED
+clearBtn.BackgroundColor3 = RED
 clearBtn.TextColor3 = Color3.new(1,1,1)
 clearBtn.MouseButton1Click:Connect(function()
     editor.Text = ""
 end)
 
--- Visuals Buttons
-local flyBtn = Instance.new("TextButton", visPage)
-flyBtn.Size = UDim2.new(0.4,0,0,40)
-flyBtn.Position = UDim2.new(0.05,0,0.1,0)
-flyBtn.Text = "AFK Fly: Off"
-flyBtn.BackgroundColor3 = COLOR_RED
-flyBtn.TextColor3 = Color3.new(1,1,1)
-
-local blockBtn = Instance.new("TextButton", visPage)
-blockBtn.Size = UDim2.new(0.9,0,0,50)
-blockBtn.Position = UDim2.new(0.05,0,0.25,0)
-blockBtn.Text = "Spawn Block"
-blockBtn.BackgroundColor3 = COLOR_RED
-blockBtn.TextColor3 = Color3.new(1,1,1)
-
--- Minimize button
-local minimizeBtn = Instance.new("TextButton", visPage)
-minimizeBtn.Size = UDim2.new(0.9,0,0,40)
-minimizeBtn.Position = UDim2.new(0.05,0,0.6,0)
-minimizeBtn.Text = "A - Minimize"
-minimizeBtn.BackgroundColor3 = COLOR_GREY
-minimizeBtn.TextColor3 = COLOR_YELLOW
-
--- RESTOR button
-local restoreBtn = Instance.new("TextButton", mainGui)
-restoreBtn.Size = UDim2.new(0,120,0,35)
-restoreBtn.Position = UDim2.new(0.5,-60,0,40)
-restoreBtn.Text = "RESTOR"
-restoreBtn.BackgroundColor3 = COLOR_RED
-restoreBtn.TextColor3 = Color3.new(1,1,1)
-restoreBtn.Visible = false
-
 -- ===========================
--- Tabs Logic
+-- Visuals
 -- ===========================
-execTab.MouseButton1Click:Connect(function()
-    execPage.Visible = true
-    visPage.Visible = false
+local pcFlyBtn = Instance.new("TextButton", visPage)
+pcFlyBtn.Size = UDim2.new(0.4,0,0,40)
+pcFlyBtn.Position = UDim2.new(0.05,0,0.1,0)
+pcFlyBtn.Text = "PC Fly: Off"
+pcFlyBtn.BackgroundColor3 = RED
+pcFlyBtn.TextColor3 = Color3.new(1,1,1)
+
+local mobileFlyBtn = Instance.new("TextButton", visPage)
+mobileFlyBtn.Size = UDim2.new(0.4,0,0,40)
+mobileFlyBtn.Position = UDim2.new(0.55,0,0.1,0)
+mobileFlyBtn.Text = "Mobile Fly: Off"
+mobileFlyBtn.BackgroundColor3 = RED
+mobileFlyBtn.TextColor3 = Color3.new(1,1,1)
+
+local pcFly = false
+local mobileFly = false
+local flySpeed = 50
+local bodyVelocity
+
+local function stopFly()
+    pcFly = false
+    mobileFly = false
+    RunService:UnbindFromRenderStep("Fly")
+    if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
+    pcFlyBtn.Text = "PC Fly: Off"
+    mobileFlyBtn.Text = "Mobile Fly: Off"
+end
+
+local function startFly(mode)
+    stopFly()
+    local root = Character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(1e5,1e5,1e5)
+    bodyVelocity.Parent = root
+
+    if mode == "PC" then
+        pcFly = true
+        pcFlyBtn.Text = "PC Fly: On"
+        RunService:BindToRenderStep("Fly",301,function()
+            local cam = workspace.CurrentCamera
+            local dir = Vector3.zero
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir += Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then dir -= Vector3.new(0,1,0) end
+            bodyVelocity.Velocity = dir.Magnitude>0 and dir.Unit*flySpeed or Vector3.zero
+        end)
+    elseif mode == "Mobile" then
+        mobileFly = true
+        mobileFlyBtn.Text = "Mobile Fly: On"
+        RunService:BindToRenderStep("Fly",301,function()
+            local dir = Vector3.new(0,0,1)
+            bodyVelocity.Velocity = dir*flySpeed
+        end)
+    end
+end
+
+pcFlyBtn.MouseButton1Click:Connect(function()
+    if pcFly then stopFly() else startFly("PC") end
 end)
 
-visTab.MouseButton1Click:Connect(function()
-    execPage.Visible = false
-    visPage.Visible = true
+mobileFlyBtn.MouseButton1Click:Connect(function()
+    if mobileFly then stopFly() else startFly("Mobile") end
 end)
 
 -- ===========================
--- Minimize / Restore
+-- BUTTONS LOGIC
 -- ===========================
-minimizeBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
+closeBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+minBtn.MouseButton1Click:Connect(function()
+    frame.Visible = false
     restoreBtn.Visible = true
 end)
 
 restoreBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = true
+    frame.Visible = true
     restoreBtn.Visible = false
 end)
 
 -- ===========================
--- Visuals Logic
+-- KEY LOGIC
 -- ===========================
-local flyEnabled = false
-local flySpeed = 50
-local bodyVelocity
-
-flyBtn.MouseButton1Click:Connect(function()
-    flyEnabled = not flyEnabled
-    flyBtn.Text = flyEnabled and "AFK Fly: On" or "AFK Fly: Off"
-
-    local root = Character:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-
-    if flyEnabled then
-        bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.MaxForce = Vector3.new(1e5,1e5,1e5)
-        bodyVelocity.Velocity = Vector3.new(0,0,0)
-        bodyVelocity.Parent = root
-
-        RunService:BindToRenderStep("AFKFly",301,function()
-            local moveDir = Vector3.new()
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + workspace.CurrentCamera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - workspace.CurrentCamera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - workspace.CurrentCamera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + workspace.CurrentCamera.CFrame.RightVector end
-            bodyVelocity.Velocity = (moveDir.Unit * flySpeed)
-        end)
+keyBtn.MouseButton1Click:Connect(function()
+    if keyBox.Text == CORRECT_KEY then
+        keyGui:Destroy()
+        gui.Enabled = true
     else
-        if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
-        RunService:UnbindFromRenderStep("AFKFly")
+        keyMsg.Text = "Wrong Key"
+        keyMsg.TextColor3 = RED
     end
 end)
 
-blockBtn.MouseButton1Click:Connect(function()
-    local root = Character:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-
-    local block = Instance.new("Part")
-    block.Size = Vector3.new(6,6,6)
-    block.Position = root.Position + Vector3.new(0,3,0)
-    block.Anchored = true
-    block.BrickColor = BrickColor.new("Bright yellow")
-    block.Material = Enum.Material.SmoothPlastic
-    block.Parent = workspace
-end)
-
 -- ===========================
--- Key Logic
+-- FPS UPDATE
 -- ===========================
-loginBtn.MouseButton1Click:Connect(function()
-    if keyBox.Text == correctKey then
-        keyGui:Destroy()
-        mainGui.Enabled = true
-    else
-        keyMsg.Text = "Wrong Key"
-        keyMsg.TextColor3 = COLOR_RED
+local frames = 0
+local last = tick()
+RunService.RenderStepped:Connect(function()
+    frames += 1
+    if tick() - last >= 1 then
+        fpsLabel.Text = "FPS: "..frames
+        frames = 0
+        last = tick()
     end
 end)
