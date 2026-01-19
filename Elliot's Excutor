@@ -1,4 +1,5 @@
--- loadstring version : 
+-- loadstring version : loadstring(game:HttpGet("https://raw.githubusercontent.com/milesplaysvr-droid/Elliot-s-RBLX-Script/refs/heads/main/Elliot's%20Excutor"))()
+-- Made By @ChatGPT & @ElliotModsVR
 
 -- Services
 local Players = game:GetService("Players")
