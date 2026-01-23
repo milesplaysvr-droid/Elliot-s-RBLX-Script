@@ -1,4 +1,4 @@
--- MMod Executor | Version 2.3
+-- MMod Executor | Version 2.4
 -- Credits: @ChatGPT, @ElliotModsVR & @Gemini
 
 local Players = game:GetService("Players")
@@ -8,6 +8,11 @@ local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local Character = Player.Character or Player.CharacterAdded:Wait()
+
+-- Update character reference on respawn
+Player.CharacterAdded:Connect(function(newChar)
+    Character = newChar
+end)
 
 -- ===========================
 -- CONFIGURATION
@@ -26,9 +31,11 @@ local Config = {
     FlySpeed = 50
 }
 
--- State Variables
+-- Cheat States
 local flyEnabled = false
 local flyMode = "None"
+local speedEnabled = false
+local jumpEnabled = false
 local bodyVelocity, bodyGyro
 
 -- ===========================
@@ -62,7 +69,6 @@ local function startFlying(mode)
     if not root or not hum then return end
     
     hum.PlatformStand = true
-    
     bodyVelocity = Instance.new("BodyVelocity", root)
     bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
     bodyVelocity.Velocity = Vector3.new(0,0,0)
@@ -74,7 +80,6 @@ local function startFlying(mode)
     RunService.RenderStepped:Connect(function()
         if not flyEnabled or not root then return end
         bodyGyro.CFrame = Camera.CFrame
-        
         local velocity = Vector3.new(0,0,0)
         
         if flyMode == "PC" then
@@ -97,7 +102,8 @@ end
 -- UI SETUP
 -- ===========================
 local mainGui = Instance.new("ScreenGui", Player.PlayerGui)
-mainGui.Name = "MMod_V2_3"
+mainGui.Name = "MMod_V2_4"
+mainGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", mainGui)
 frame.Size = UDim2.new(0, 500, 0, 350)
@@ -120,10 +126,10 @@ title.BackgroundTransparency = 1
 title.Text = "MMod | " .. Config.Credits
 title.TextColor3 = Config.Colors.Text
 title.Font = Enum.Font.GothamBold
-title.TextSize = 12
+title.TextSize = 11
 title.TextXAlignment = Enum.TextXAlignment.Left
 
--- Control Buttons (Minimize and Close)
+-- Controls
 local closeBtn = Instance.new("TextButton", topBar)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
 closeBtn.Position = UDim2.new(1, -35, 0, 2)
@@ -140,7 +146,6 @@ minBtn.BackgroundColor3 = Config.Colors.Secondary
 minBtn.TextColor3 = Config.Colors.Text
 createCorner(minBtn, 5)
 
--- Restore Button
 local restoreBtn = Instance.new("TextButton", mainGui)
 restoreBtn.Size = UDim2.new(0, 100, 0, 35)
 restoreBtn.Position = UDim2.new(0.5, -50, 0, 50)
@@ -148,6 +153,8 @@ restoreBtn.BackgroundColor3 = Config.Colors.Accent
 restoreBtn.Text = "RESTORE"
 restoreBtn.TextColor3 = Config.Colors.Text
 restoreBtn.Visible = false
+restoreBtn.Active = true
+restoreBtn.Draggable = true
 createCorner(restoreBtn, 8)
 
 -- Tab Buttons
@@ -182,7 +189,7 @@ container.BackgroundTransparency = 1
 local execPage = Instance.new("Frame", container); execPage.Size = UDim2.new(1,0,1,0); execPage.BackgroundTransparency = 1
 local cheatPage = Instance.new("Frame", container); cheatPage.Size = UDim2.new(1,0,1,0); cheatPage.Visible = false; cheatPage.BackgroundTransparency = 1
 
--- Tab Switching Logic
+-- Switching
 execBtn.MouseButton1Click:Connect(function()
     execPage.Visible = true; cheatPage.Visible = false
     execBtn.BackgroundColor3 = Config.Colors.Accent
@@ -195,26 +202,15 @@ cheatBtn.MouseButton1Click:Connect(function()
     execBtn.BackgroundColor3 = Config.Colors.Secondary
 end)
 
--- Minimize/Restore Logic
-minBtn.MouseButton1Click:Connect(function()
-    frame.Visible = false
-    restoreBtn.Visible = true
-end)
-
-restoreBtn.MouseButton1Click:Connect(function()
-    frame.Visible = true
-    restoreBtn.Visible = false
-end)
-
-closeBtn.MouseButton1Click:Connect(function()
-    mainGui:Destroy()
-    stopFlying()
-end)
+-- Min/Restore
+minBtn.MouseButton1Click:Connect(function() frame.Visible = false; restoreBtn.Visible = true end)
+restoreBtn.MouseButton1Click:Connect(function() frame.Visible = true; restoreBtn.Visible = false end)
+closeBtn.MouseButton1Click:Connect(function() mainGui:Destroy(); stopFlying() end)
 
 -- ===========================
 -- CHEATS PAGE CONTENT
 -- ===========================
-local function createCheatToggle(name, pos, callback)
+local function createCheatBtn(name, pos, callback)
     local b = Instance.new("TextButton", cheatPage)
     b.Size = UDim2.new(0.48, 0, 0, 35)
     b.Position = pos
@@ -222,27 +218,57 @@ local function createCheatToggle(name, pos, callback)
     b.Text = name
     b.TextColor3 = Config.Colors.Text
     b.Font = Enum.Font.GothamSemibold
+    b.TextSize = 12
     createCorner(b, 5)
-    b.MouseButton1Click:Connect(callback)
+    b.MouseButton1Click:Connect(function() callback(b) end)
     return b
 end
 
-createCheatToggle("PC Fly (WASD)", UDim2.new(0, 0, 0, 0), function()
-    if flyMode == "PC" then stopFlying() else startFlying("PC") end
+-- Fly Toggles
+createCheatBtn("PC Fly: Off", UDim2.new(0, 0, 0, 0), function(btn)
+    if flyMode == "PC" then
+        stopFlying()
+        btn.Text = "PC Fly: Off"
+        btn.BackgroundColor3 = Config.Colors.Secondary
+    else
+        startFlying("PC")
+        btn.Text = "PC Fly: On"
+        btn.BackgroundColor3 = Config.Colors.Success
+    end
 end)
 
-createCheatToggle("Mobile Fly (Cam)", UDim2.new(0.52, 0, 0, 0), function()
-    if flyMode == "Mobile" then stopFlying() else startFlying("Mobile") end
+createCheatBtn("Mobile Fly: Off", UDim2.new(0.52, 0, 0, 0), function(btn)
+    if flyMode == "Mobile" then
+        stopFlying()
+        btn.Text = "Mobile Fly: Off"
+        btn.BackgroundColor3 = Config.Colors.Secondary
+    else
+        startFlying("Mobile")
+        btn.Text = "Mobile Fly: On"
+        btn.BackgroundColor3 = Config.Colors.Success
+    end
 end)
 
-createCheatToggle("Speed (50)", UDim2.new(0, 0, 0, 45), function()
+-- Speed Toggle
+createCheatBtn("Speed: Off", UDim2.new(0, 0, 0, 45), function(btn)
+    speedEnabled = not speedEnabled
     local hum = Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.WalkSpeed = 50 end
+    if hum then
+        hum.WalkSpeed = speedEnabled and 50 or 16
+        btn.Text = "Speed: " .. (speedEnabled and "On" or "Off")
+        btn.BackgroundColor3 = speedEnabled and Config.Colors.Success or Config.Colors.Secondary
+    end
 end)
 
-createCheatToggle("Jump (100)", UDim2.new(0.52, 0, 0, 45), function()
+-- Jump Toggle
+createCheatBtn("Jump: Off", UDim2.new(0.52, 0, 0, 45), function(btn)
+    jumpEnabled = not jumpEnabled
     local hum = Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.JumpPower = 100 end
+    if hum then
+        hum.JumpPower = jumpEnabled and 100 or 50
+        btn.Text = "Jump: " .. (jumpEnabled and "On" or "Off")
+        btn.BackgroundColor3 = jumpEnabled and Config.Colors.Success or Config.Colors.Secondary
+    end
 end)
 
 -- ===========================
@@ -254,7 +280,9 @@ editor.BackgroundColor3 = Config.Colors.Secondary
 editor.TextColor3 = Config.Colors.Text
 editor.MultiLine = true
 editor.Text = ""
-editor.PlaceholderText = "-- Script goes here..."
+editor.PlaceholderText = "-- Type script here..."
+editor.TextXAlignment = Enum.TextXAlignment.Left
+editor.TextYAlignment = Enum.TextYAlignment.Top
 createCorner(editor, 5)
 
 local run = Instance.new("TextButton", execPage)
