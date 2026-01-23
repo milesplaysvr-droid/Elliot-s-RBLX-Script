@@ -1,4 +1,4 @@
--- MMod Executor | Version 2.4
+-- MMod Executor | Version 2.5
 -- Credits: @ChatGPT, @ElliotModsVR & @Gemini
 
 local Players = game:GetService("Players")
@@ -18,8 +18,7 @@ end)
 -- CONFIGURATION
 -- ===========================
 local Config = {
-    Keys = {"Rockyonion123?", "AsherONTOP421"},
-    Password = "ElliottIG",
+    Keys = {"Rockyonion123?", "AsherONTOP123", "ElliottIG"},
     Colors = {
         Main = Color3.fromRGB(15, 15, 15),
         Accent = Color3.fromRGB(180, 0, 0),
@@ -31,7 +30,7 @@ local Config = {
     FlySpeed = 50
 }
 
--- Cheat States
+-- States
 local flyEnabled = false
 local flyMode = "None"
 local speedEnabled = false
@@ -102,19 +101,53 @@ end
 -- UI SETUP
 -- ===========================
 local mainGui = Instance.new("ScreenGui", Player.PlayerGui)
-mainGui.Name = "MMod_V2_4"
+mainGui.Name = "MMod_V2_5"
 mainGui.ResetOnSpawn = false
 
-local frame = Instance.new("Frame", mainGui)
-frame.Size = UDim2.new(0, 500, 0, 350)
-frame.Position = UDim2.new(0.5, -250, 0.5, -175)
-frame.BackgroundColor3 = Config.Colors.Main
-frame.Active = true
-frame.Draggable = true
-createCorner(frame, 10)
+-- KEY SYSTEM FRAME
+local keyFrame = Instance.new("Frame", mainGui)
+keyFrame.Size = UDim2.new(0, 300, 0, 180)
+keyFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+keyFrame.BackgroundColor3 = Config.Colors.Main
+createCorner(keyFrame, 10)
+
+local keyTitle = Instance.new("TextLabel", keyFrame)
+keyTitle.Size = UDim2.new(1, 0, 0, 35)
+keyTitle.BackgroundColor3 = Config.Colors.Accent
+keyTitle.Text = "MMod Key System"
+keyTitle.TextColor3 = Config.Colors.Text
+keyTitle.Font = Enum.Font.GothamBold
+createCorner(keyTitle, 10)
+
+local keyInput = Instance.new("TextBox", keyFrame)
+keyInput.Size = UDim2.new(0.8, 0, 0, 35)
+keyInput.Position = UDim2.new(0.1, 0, 0.35, 0)
+keyInput.BackgroundColor3 = Config.Colors.Secondary
+keyInput.PlaceholderText = "Enter Key Here..."
+keyInput.TextColor3 = Config.Colors.Text
+createCorner(keyInput, 5)
+
+local loginBtn = Instance.new("TextButton", keyFrame)
+loginBtn.Size = UDim2.new(0.8, 0, 0, 35)
+loginBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
+loginBtn.BackgroundColor3 = Config.Colors.Success
+loginBtn.Text = "LOGIN"
+loginBtn.TextColor3 = Config.Colors.Text
+loginBtn.Font = Enum.Font.GothamBold
+createCorner(loginBtn, 5)
+
+-- MAIN EXECUTOR FRAME (Initially Hidden)
+local mainFrame = Instance.new("Frame", mainGui)
+mainFrame.Size = UDim2.new(0, 500, 0, 350)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+mainFrame.BackgroundColor3 = Config.Colors.Main
+mainFrame.Visible = false
+mainFrame.Active = true
+mainFrame.Draggable = true
+createCorner(mainFrame, 10)
 
 -- Top Bar
-local topBar = Instance.new("Frame", frame)
+local topBar = Instance.new("Frame", mainFrame)
 topBar.Size = UDim2.new(1, 0, 0, 35)
 topBar.BackgroundColor3 = Config.Colors.Accent
 createCorner(topBar, 10)
@@ -153,12 +186,11 @@ restoreBtn.BackgroundColor3 = Config.Colors.Accent
 restoreBtn.Text = "RESTORE"
 restoreBtn.TextColor3 = Config.Colors.Text
 restoreBtn.Visible = false
-restoreBtn.Active = true
 restoreBtn.Draggable = true
 createCorner(restoreBtn, 8)
 
--- Tab Buttons
-local tabs = Instance.new("Frame", frame)
+-- Tabs
+local tabs = Instance.new("Frame", mainFrame)
 tabs.Size = UDim2.new(1, -20, 0, 30)
 tabs.Position = UDim2.new(0, 10, 0, 45)
 tabs.BackgroundTransparency = 1
@@ -180,8 +212,7 @@ cheatBtn.TextColor3 = Config.Colors.Text
 cheatBtn.Font = Enum.Font.GothamBold
 createCorner(cheatBtn, 5)
 
--- Pages
-local container = Instance.new("Frame", frame)
+local container = Instance.new("Frame", mainFrame)
 container.Size = UDim2.new(1, -20, 1, -90)
 container.Position = UDim2.new(0, 10, 0, 80)
 container.BackgroundTransparency = 1
@@ -189,28 +220,39 @@ container.BackgroundTransparency = 1
 local execPage = Instance.new("Frame", container); execPage.Size = UDim2.new(1,0,1,0); execPage.BackgroundTransparency = 1
 local cheatPage = Instance.new("Frame", container); cheatPage.Size = UDim2.new(1,0,1,0); cheatPage.Visible = false; cheatPage.BackgroundTransparency = 1
 
--- Switching
+-- Logic
+loginBtn.MouseButton1Click:Connect(function()
+    local isKeyValid = false
+    for _, k in pairs(Config.Keys) do
+        if keyInput.Text == k then isKeyValid = true break end
+    end
+    if isKeyValid then
+        keyFrame.Visible = false
+        mainFrame.Visible = true
+    else
+        keyInput.Text = ""
+        keyInput.PlaceholderText = "WRONG KEY!"
+    end
+end)
+
 execBtn.MouseButton1Click:Connect(function()
     execPage.Visible = true; cheatPage.Visible = false
-    execBtn.BackgroundColor3 = Config.Colors.Accent
-    cheatBtn.BackgroundColor3 = Config.Colors.Secondary
+    execBtn.BackgroundColor3 = Config.Colors.Accent; cheatBtn.BackgroundColor3 = Config.Colors.Secondary
 end)
 
 cheatBtn.MouseButton1Click:Connect(function()
     execPage.Visible = false; cheatPage.Visible = true
-    cheatBtn.BackgroundColor3 = Config.Colors.Accent
-    execBtn.BackgroundColor3 = Config.Colors.Secondary
+    cheatBtn.BackgroundColor3 = Config.Colors.Accent; execBtn.BackgroundColor3 = Config.Colors.Secondary
 end)
 
--- Min/Restore
-minBtn.MouseButton1Click:Connect(function() frame.Visible = false; restoreBtn.Visible = true end)
-restoreBtn.MouseButton1Click:Connect(function() frame.Visible = true; restoreBtn.Visible = false end)
+minBtn.MouseButton1Click:Connect(function() mainFrame.Visible = false; restoreBtn.Visible = true end)
+restoreBtn.MouseButton1Click:Connect(function() mainFrame.Visible = true; restoreBtn.Visible = false end)
 closeBtn.MouseButton1Click:Connect(function() mainGui:Destroy(); stopFlying() end)
 
 -- ===========================
 -- CHEATS PAGE CONTENT
 -- ===========================
-local function createCheatBtn(name, pos, callback)
+local function createToggle(name, pos, callback)
     local b = Instance.new("TextButton", cheatPage)
     b.Size = UDim2.new(0.48, 0, 0, 35)
     b.Position = pos
@@ -218,39 +260,21 @@ local function createCheatBtn(name, pos, callback)
     b.Text = name
     b.TextColor3 = Config.Colors.Text
     b.Font = Enum.Font.GothamSemibold
-    b.TextSize = 12
     createCorner(b, 5)
     b.MouseButton1Click:Connect(function() callback(b) end)
-    return b
 end
 
--- Fly Toggles
-createCheatBtn("PC Fly: Off", UDim2.new(0, 0, 0, 0), function(btn)
-    if flyMode == "PC" then
-        stopFlying()
-        btn.Text = "PC Fly: Off"
-        btn.BackgroundColor3 = Config.Colors.Secondary
-    else
-        startFlying("PC")
-        btn.Text = "PC Fly: On"
-        btn.BackgroundColor3 = Config.Colors.Success
-    end
+createToggle("PC Fly: Off", UDim2.new(0, 0, 0, 0), function(btn)
+    if flyMode == "PC" then stopFlying() btn.Text = "PC Fly: Off" btn.BackgroundColor3 = Config.Colors.Secondary
+    else startFlying("PC") btn.Text = "PC Fly: On" btn.BackgroundColor3 = Config.Colors.Success end
 end)
 
-createCheatBtn("Mobile Fly: Off", UDim2.new(0.52, 0, 0, 0), function(btn)
-    if flyMode == "Mobile" then
-        stopFlying()
-        btn.Text = "Mobile Fly: Off"
-        btn.BackgroundColor3 = Config.Colors.Secondary
-    else
-        startFlying("Mobile")
-        btn.Text = "Mobile Fly: On"
-        btn.BackgroundColor3 = Config.Colors.Success
-    end
+createToggle("Mobile Fly: Off", UDim2.new(0.52, 0, 0, 0), function(btn)
+    if flyMode == "Mobile" then stopFlying() btn.Text = "Mobile Fly: Off" btn.BackgroundColor3 = Config.Colors.Secondary
+    else startFlying("Mobile") btn.Text = "Mobile Fly: On" btn.BackgroundColor3 = Config.Colors.Success end
 end)
 
--- Speed Toggle
-createCheatBtn("Speed: Off", UDim2.new(0, 0, 0, 45), function(btn)
+createToggle("Speed: Off", UDim2.new(0, 0, 0, 45), function(btn)
     speedEnabled = not speedEnabled
     local hum = Character:FindFirstChildOfClass("Humanoid")
     if hum then
@@ -260,8 +284,7 @@ createCheatBtn("Speed: Off", UDim2.new(0, 0, 0, 45), function(btn)
     end
 end)
 
--- Jump Toggle
-createCheatBtn("Jump: Off", UDim2.new(0.52, 0, 0, 45), function(btn)
+createToggle("Jump: Off", UDim2.new(0.52, 0, 0, 45), function(btn)
     jumpEnabled = not jumpEnabled
     local hum = Character:FindFirstChildOfClass("Humanoid")
     if hum then
