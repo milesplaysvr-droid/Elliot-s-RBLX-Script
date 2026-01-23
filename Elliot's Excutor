@@ -14,7 +14,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 -- CONFIG
 -- ===========================
 local CORRECT_KEY = "Rockyonion123?"
-local CORRECT_KEY = "AsherONTOP421"
+local CORRECT_KEY_2 = "AsherONTOP421"
 local CORRECT_PASSWORD = "ElliottIG"
 
 -- Colors
