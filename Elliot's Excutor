@@ -1,5 +1,4 @@
--- MMod-Style Executor | Full Version
--- Made By : @ChatGPT @ElliotModsVR @Gemini
+-- MMod Executor | Full Version with Follow Player
 
 -- SERVICES
 local Players = game:GetService("Players")
@@ -22,6 +21,10 @@ local bodyVelocity, bodyGyro
 local flySpeed = 50
 local flyConnection
 
+-- FOLLOW PLAYER
+local followTarget
+local followEnabled = false
+
 -- =====================
 -- GUI SETUP
 -- =====================
@@ -30,8 +33,8 @@ gui.Name = "MModExecutor"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,520,0,360)
-main.Position = UDim2.new(0.5,-260,0.5,-180)
+main.Size = UDim2.new(0,520,0,400)
+main.Position = UDim2.new(0.5,-260,0.5,-200)
 main.BackgroundColor3 = Color3.fromRGB(25,25,25)
 main.Active = true
 main.Draggable = true
@@ -143,7 +146,6 @@ end
 -- =====================
 -- CHEATS
 -- =====================
-
 button(cheatsPage,"Noclip: Off",UDim2.new(0,10,0,10),function(b)
     noclip = not noclip
     b.Text = "Noclip: "..(noclip and "On" or "Off")
@@ -177,6 +179,23 @@ end)
 
 button(cheatsPage,"Rejoin Server",UDim2.new(0,10,0,100),function()
     TeleportService:Teleport(game.PlaceId, Player)
+end)
+
+button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,100), function(b)
+    if Player.Backpack:FindFirstChild("ForceField") then
+        Player.Backpack.ForceField:Destroy()
+    end
+    local tool = Instance.new("Tool")
+    tool.Name = "ForceField"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.Parent = Player.Backpack
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(1,1,1)
+    handle.Material = Enum.Material.Neon
+    handle.Color = Color3.fromRGB(0,180,255)
+    handle.Parent = tool
 end)
 
 -- =====================
@@ -232,36 +251,44 @@ local function startFly(mode)
     end)
 end
 
-button(cheatsPage,"PC Fly: Off",UDim2.new(0,10,0,140),function(b)
+button(cheatsPage,"PC Fly: Off",UDim2.new(0,10,0,145),function(b)
     if flyMode == "PC" then stopFly() b.Text="PC Fly: Off" b.BackgroundColor3=Color3.fromRGB(40,40,40)
     else startFly("PC") b.Text="PC Fly: On" b.BackgroundColor3=Color3.fromRGB(0,180,0) end
 end)
 
-button(cheatsPage,"Mobile Fly: Off",UDim2.new(0.5,0,0,140),function(b)
+button(cheatsPage,"Mobile Fly: Off",UDim2.new(0.5,0,0,145),function(b)
     if flyMode == "Mobile" then stopFly() b.Text="Mobile Fly: Off" b.BackgroundColor3=Color3.fromRGB(40,40,40)
     else startFly("Mobile") b.Text="Mobile Fly: On" b.BackgroundColor3=Color3.fromRGB(0,180,0) end
 end)
 
 -- =====================
--- FORCEFIELD ITEM
+-- FOLLOW PLAYER FEATURE
 -- =====================
-button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,200), function(b)
-    if Player.Backpack:FindFirstChild("ForceField") then
-        Player.Backpack.ForceField:Destroy()
+local followBox = Instance.new("TextBox", cheatsPage)
+followBox.Size = UDim2.new(0.48,0,0,35)
+followBox.Position = UDim2.new(0,10,0,190)
+followBox.PlaceholderText = "Enter player name..."
+followBox.Text = ""
+followBox.ClearTextOnFocus = false
+followBox.TextColor3 = Color3.new(1,1,1)
+followBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+round(followBox)
+
+button(cheatsPage,"Follow: Off",UDim2.new(0.5,0,0,190),function(b)
+    followEnabled = not followEnabled
+    followTarget = Players:FindFirstChild(followBox.Text)
+    b.Text = "Follow: "..(followEnabled and "On" or "Off")
+end)
+
+RunService.RenderStepped:Connect(function()
+    if followEnabled and followTarget and followTarget.Character and followTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local root = Character:FindFirstChild("HumanoidRootPart")
+        local targetRoot = followTarget.Character:FindFirstChild("HumanoidRootPart")
+        if root and targetRoot then
+            local direction = (targetRoot.Position - root.Position).Unit
+            root.CFrame = CFrame.new(root.Position + direction * 0.5, targetRoot.Position)
+        end
     end
-
-    local tool = Instance.new("Tool")
-    tool.Name = "ForceField"
-    tool.RequiresHandle = true
-    tool.CanBeDropped = false
-    tool.Parent = Player.Backpack
-
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(1,1,1)
-    handle.Material = Enum.Material.Neon
-    handle.Color = Color3.fromRGB(0,180,255)
-    handle.Parent = tool
 end)
 
 -- =====================
