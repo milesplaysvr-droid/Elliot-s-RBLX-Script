@@ -143,6 +143,40 @@ end
 -- =====================
 -- CHEATS
 -- =====================
+-- ===== FOLLOW PLAYER =====
+local followTarget
+local followEnabled = false
+
+-- TextBox to enter player name
+local followBox = Instance.new("TextBox", cheatsPage)
+followBox.Size = UDim2.new(0.48,0,0,290)
+followBox.Position = UDim2.new(0,10,0,0) -- adjust Y as needed
+followBox.PlaceholderText = "Enter player name..."
+followBox.Text = ""
+followBox.ClearTextOnFocus = false
+followBox.TextColor3 = Color3.new(1,1,1)
+followBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+round(followBox)
+
+-- Follow toggle button
+button(cheatsPage,"Follow: Off",UDim2.new(0.5,0,0,290),function(b)
+    followEnabled = not followEnabled
+    followTarget = Players:FindFirstChild(followBox.Text)
+    b.Text = "Follow: "..(followEnabled and "On" or "Off")
+end)
+
+-- Follow loop
+RunService.RenderStepped:Connect(function()
+    if followEnabled and followTarget and followTarget.Character and followTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local root = Character:FindFirstChild("HumanoidRootPart")
+        local targetRoot = followTarget.Character:FindFirstChild("HumanoidRootPart")
+        if root and targetRoot then
+            local direction = (targetRoot.Position - root.Position).Unit
+            root.CFrame = CFrame.new(root.Position + direction * 0.5, targetRoot.Position)
+        end
+    end
+end)
+
 button(cheatsPage,"Noclip: Off",UDim2.new(0,10,0,10),function(b)
     noclip = not noclip
     b.Text = "Noclip: "..(noclip and "On" or "Off")
