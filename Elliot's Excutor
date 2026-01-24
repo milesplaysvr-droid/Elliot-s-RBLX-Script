@@ -1,5 +1,5 @@
--- MMod-Style Executor | Fully Polished
---Made By @ElliotModsVR, Gemini & ChatGPT
+-- MMod-Style Executor | Full Version
+-- Made By : @ChatGPT @ElliotModsVR @Gemini
 
 -- SERVICES
 local Players = game:GetService("Players")
@@ -143,30 +143,25 @@ end
 -- =====================
 -- CHEATS
 -- =====================
--- Give fake ForceField item
-button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,200), function(b)
-    -- Remove old
-    if Player.Backpack:FindFirstChild("ForceField") then
-        Player.Backpack.ForceField:Destroy()
-    end
-
-    -- Create tool
-    local tool = Instance.new("Tool")
-    tool.Name = "ForceField"
-    tool.RequiresHandle = true
-    tool.CanBeDropped = false
-    tool.Parent = Player.Backpack
-
-    -- Create handle (what you see in hand)
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(1,1,1)
-    handle.Material = Enum.Material.Neon
-    handle.Color = Color3.fromRGB(0,180,255)
-    handle.Parent = tool
+button(cheatsPage,"Noclip: Off",UDim2.new(0,10,0,10),function(b)
+    noclip = not noclip
+    b.Text = "Noclip: "..(noclip and "On" or "Off")
 end)
 
-
+button(cheatsPage,"ForceField: Off",UDim2.new(0.5,0,0,10),function(b)
+    ff = not ff
+    if ff then
+        ffInstance = Instance.new("ForceField")
+        ffInstance.Visible = true
+        ffInstance.Parent = Character
+    else
+        if ffInstance then
+            ffInstance:Destroy()
+            ffInstance = nil
+        end
+    end
+    b.Text = "ForceField: "..(ff and "On" or "Off")
+end)
 
 button(cheatsPage,"Anti-Ragdoll: Off",UDim2.new(0,10,0,55),function(b)
     antiRagdoll = not antiRagdoll
@@ -244,6 +239,28 @@ end)
 button(cheatsPage,"Mobile Fly: Off",UDim2.new(0.5,0,0,140),function(b)
     if flyMode == "Mobile" then stopFly() b.Text="Mobile Fly: Off" b.BackgroundColor3=Color3.fromRGB(40,40,40)
     else startFly("Mobile") b.Text="Mobile Fly: On" b.BackgroundColor3=Color3.fromRGB(0,180,0) end
+end)
+
+-- =====================
+-- FORCEFIELD ITEM
+-- =====================
+button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,200), function(b)
+    if Player.Backpack:FindFirstChild("ForceField") then
+        Player.Backpack.ForceField:Destroy()
+    end
+
+    local tool = Instance.new("Tool")
+    tool.Name = "ForceField"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.Parent = Player.Backpack
+
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(1,1,1)
+    handle.Material = Enum.Material.Neon
+    handle.Color = Color3.fromRGB(0,180,255)
+    handle.Parent = tool
 end)
 
 -- =====================
