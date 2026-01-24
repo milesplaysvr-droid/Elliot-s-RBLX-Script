@@ -149,51 +149,34 @@ button(cheatsPage, "Give ForceField Item", UDim2.new(0, 10, 0, 200), function(b)
         Character.ForceFieldItem:Destroy()
     end
     
-    -- Create new visual item
-    local item = Instance.new("Part")
-    item.Name = "ForceFieldItem"
-    item.Size = Vector3.new(2, 2, 2)
-    item.Shape = Enum.PartType.Ball
-    item.Material = Enum.Material.Neon
-    item.Color = Color3.fromRGB(0, 180, 255)
-    item.Anchored = false
-    item.CanCollide = false
-    item.Parent = Character
-    
-    -- Weld it to HumanoidRootPart
-    local weld = Instance.new("WeldConstraint")
-    weld.Part0 = Character:FindFirstChild("HumanoidRootPart")
-    weld.Part1 = item
-    weld.Parent = item
-    
-    -- Optional: animate rotation
-    spawn(function()
-        while item.Parent do
-            item.CFrame = item.CFrame * CFrame.Angles(0, math.rad(5), 0)
-            wait(0.03)
-        end
-    end)
-end)
-
-button(cheatsPage,"Noclip: Off",UDim2.new(0,10,0,10),function(b)
-    noclip = not noclip
-    b.Text = "Noclip: "..(noclip and "On" or "Off")
-end)
-
-button(cheatsPage,"ForceField: Off",UDim2.new(0.5,0,0,10),function(b)
-    ff = not ff
-    if ff then
-        ffInstance = Instance.new("ForceField")
-        ffInstance.Visible = true
-        ffInstance.Parent = Character
-    else
-        if ffInstance then
-            ffInstance:Destroy()
-            ffInstance = nil
-        end
+button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,200), function(b)
+    -- Remove old tool if exists
+    if Player.Backpack:FindFirstChild("ForceField") then
+        Player.Backpack.ForceField:Destroy()
     end
-    b.Text = "ForceField: "..(ff and "On" or "Off")
+
+    -- Create new Tool
+    local tool = Instance.new("Tool")
+    tool.Name = "ForceField"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.Parent = Player.Backpack
+
+    -- Create Handle (visual)
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(1,1,1)
+    handle.Material = Enum.Material.Neon
+    handle.Color = Color3.fromRGB(0,180,255)
+    handle.Parent = tool
+
+    -- Weld for holding
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = handle
+    weld.Part1 = handle
+    weld.Parent = handle
 end)
+
 
 button(cheatsPage,"Anti-Ragdoll: Off",UDim2.new(0,10,0,55),function(b)
     antiRagdoll = not antiRagdoll
