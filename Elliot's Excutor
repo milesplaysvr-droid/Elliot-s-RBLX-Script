@@ -143,39 +143,29 @@ end
 -- =====================
 -- CHEATS
 -- =====================
-button(cheatsPage, "Give ForceField Item", UDim2.new(0, 10, 0, 200), function(b)
-    -- Remove old if exists
-    if Character:FindFirstChild("ForceFieldItem") then
-        Character.ForceFieldItem:Destroy()
-    end
-    
+-- Give fake ForceField item
 button(cheatsPage, "Give ForceField Item", UDim2.new(0,10,0,200), function(b)
-    -- Remove old tool if exists
+    -- Remove old
     if Player.Backpack:FindFirstChild("ForceField") then
         Player.Backpack.ForceField:Destroy()
     end
 
-    -- Create new Tool
+    -- Create tool
     local tool = Instance.new("Tool")
     tool.Name = "ForceField"
     tool.RequiresHandle = true
     tool.CanBeDropped = false
     tool.Parent = Player.Backpack
 
-    -- Create Handle (visual)
+    -- Create handle (what you see in hand)
     local handle = Instance.new("Part")
     handle.Name = "Handle"
     handle.Size = Vector3.new(1,1,1)
     handle.Material = Enum.Material.Neon
     handle.Color = Color3.fromRGB(0,180,255)
     handle.Parent = tool
-
-    -- Weld for holding
-    local weld = Instance.new("WeldConstraint")
-    weld.Part0 = handle
-    weld.Part1 = handle
-    weld.Parent = handle
 end)
+
 
 
 button(cheatsPage,"Anti-Ragdoll: Off",UDim2.new(0,10,0,55),function(b)
