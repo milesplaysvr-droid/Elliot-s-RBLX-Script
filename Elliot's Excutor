@@ -290,6 +290,36 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+-- ===== ORBIT PLAYER =====
+local orbitEnabled = false
+local orbitAngle = 0
+local orbitRadius = 6 -- distance from player
+local orbitSpeed = 0.03
+
+button(cheatsPage,"Orbit: Off",UDim2.new(0,10,0,330),function(b)
+    orbitEnabled = not orbitEnabled
+    b.Text = "Orbit: "..(orbitEnabled and "On" or "Off")
+end)
+
+RunService.RenderStepped:Connect(function()
+    if orbitEnabled and followTarget
+    and followTarget.Character
+    and followTarget.Character:FindFirstChild("HumanoidRootPart") then
+
+        local root = Character:FindFirstChild("HumanoidRootPart")
+        local targetRoot = followTarget.Character.HumanoidRootPart
+        if root then
+            orbitAngle += orbitSpeed
+            local offset = Vector3.new(
+                math.cos(orbitAngle) * orbitRadius,
+                0,
+                math.sin(orbitAngle) * orbitRadius
+            )
+
+            root.CFrame = CFrame.new(targetRoot.Position + offset, targetRoot.Position)
+        end
+    end
+end)
 
 -- =====================
 -- NOCLIP LOOP
